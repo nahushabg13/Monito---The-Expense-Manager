@@ -31,12 +31,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -162,7 +166,10 @@ fun ExpenseListScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(expenses) { expense ->
-                ExpenseItem(expense)
+                ExpenseItem(
+                    expense,
+                    deleteExpense = {viewModel.deleteExpense(expense)}
+                )
             }
         }
 
@@ -170,7 +177,10 @@ fun ExpenseListScreen(
 }
 
 @Composable
-fun ExpenseItem(expense: ExpenseEntity) {
+fun ExpenseItem(
+    expense: ExpenseEntity,
+    deleteExpense: (ExpenseEntity) ->Unit
+) {
     val categoryColor = when (expense.category) {
         "Food" -> Color(0xFF1D9E75)
         "Transport" -> Color(0xFF378ADD)
@@ -214,6 +224,12 @@ fun ExpenseItem(expense: ExpenseEntity) {
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
+
+        IconButton(onClick = {
+            deleteExpense(expense)
+        }) {
+            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
+        }
     }
 }
 

@@ -8,4 +8,8 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
     suspend fun insertExpense(expense: ExpenseEntity) {
         expenseDao.insertExpense(expense)
     }
+
+    suspend fun deleteExpense(expense:ExpenseEntity) {
+        expenseDao.deleteExpense(expense)
+    }
 }

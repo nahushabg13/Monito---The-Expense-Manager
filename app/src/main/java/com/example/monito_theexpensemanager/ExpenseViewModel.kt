@@ -22,6 +22,12 @@ class ExpenseViewModel(private val repository: ExpenseRepository): ViewModel() {
         }
     }
 
+    fun deleteExpense(expense:ExpenseEntity) {
+        viewModelScope.launch {
+            repository.deleteExpense(expense)
+        }
+    }
+
     class ExpenseViewModelFactory(private val repository: ExpenseRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
