@@ -41,12 +41,16 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.innerShadow
@@ -92,8 +96,11 @@ class MainActivity : ComponentActivity() {
             )
             MonitoTheExpenseManagerTheme {
                 val navController = rememberNavController()
+                val snackbarHostState = remember { SnackbarHostState() }
+
                 Scaffold(
                     topBar = {},
+                    snackbarHost = { SnackbarHost(snackbarHostState) },  // ← ADD THIS
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = { navController.navigate("addExpense") }
@@ -117,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding) // ✅ innerPadding used here
                     ) {
                         composable("list") {  ExpenseListScreen(navController, viewModel = viewModel) }
-                        composable("addExpense") { AddExpenseScreen(navController, viewModel = viewModel) }
+                        composable("addExpense") { AddExpenseScreen(navController, viewModel = viewModel, snackbarHostState = snackbarHostState) }
                     }
                 }
             }
@@ -238,13 +245,22 @@ fun AddExpenseScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ExpenseViewModel,
+    snackbarHostState: SnackbarHostState
 ) {
+    var expenseSaved by remember { mutableStateOf(false) }
     val categories = listOf("Food", "Transport", "Groceries", "Hobbies", "Other")
-    var amount by remember  {mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Food") }
+    var amount by rememberSaveable  {mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf("") }
+    var selectedCategory by rememberSaveable { mutableStateOf("Food") }
     val date = remember {
         java.time.LocalDate.now().toString()
+    }
+
+    if (expenseSaved) {
+        LaunchedEffect(key1 = expenseSaved) {
+            snackbarHostState.showSnackbar("Expense saved!")
+            navController.popBackStack()
+        }
     }
 
     Column(
@@ -294,7 +310,7 @@ fun AddExpenseScreen(
                             date = date
                         )
                     )
-                    navController.popBackStack()
+                    expenseSaved = true  // ← trigger the effect
                 }
             }
         ) {
