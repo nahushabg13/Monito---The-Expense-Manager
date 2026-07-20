@@ -33,31 +33,30 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val route = navBackStackEntry?.destination?.route
+            var navController = rememberNavController()
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val route = backStackEntry?.destination?.route
 
-
-            MonitoTheExpenseManagerTheme {
+            MonitoTheExpenseManagerTheme() {
                 Scaffold(
-                    bottomBar = {
-                        BottomAppBar {
-                            NavigationBar {
-                                NavigationBarItem(
-                                    icon = {Icon(imageVector = Icons.Filled.CurrencyRupee, contentDescription = null)},
-                                    label = {Text("Transactions")},
-                                    onClick = { navController.navigate("transactions") },
-                                    selected = route =="transactions"
-                                )
-                                NavigationBarItem(
-                                    icon = {Icon(imageVector = Icons.Filled.AutoGraph, contentDescription = null)},
-                                    label = {Text("Graphs")},
-                                    onClick = { navController.navigate("graphs") },
-                                    selected = route =="graphs"
-                                )
-                            }
-                        }
-                    }
+                   bottomBar =  {
+                       BottomAppBar() {
+                           NavigationBar() {
+                               NavigationBarItem(
+                                   onClick = {navController.navigate("transactions")},
+                                   selected = route=="transactions",
+                                   icon = {Icon(imageVector =Icons.Filled.CurrencyRupee,contentDescription = null )},
+                                   label = {Text("Transactions")}
+                               )
+                               NavigationBarItem(
+                                   onClick = {navController.navigate("graphs")},
+                                   selected = route=="graphs",
+                                   icon = {Icon(imageVector =Icons.Filled.AutoGraph,contentDescription = null )},
+                                   label = {Text("Graphs")}
+                               )
+                           }
+                       }
+                   }
                 ) {innerPadding ->
                     NavHost(
                         modifier = Modifier.padding(innerPadding),
@@ -74,7 +73,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
     }
 }
 
