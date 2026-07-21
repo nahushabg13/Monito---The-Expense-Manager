@@ -28,11 +28,13 @@
 ### Phase 0 — Data model & navigation skeleton
 **Goal:** get the schema right before building UI on top of it, and stand up a navigable shell.
 **Build:**
-- `TransactionEntity`: id, amount, note, date, categoryId (FK), type (`EXPENSE`/`INCOME`) — type is decided now because adding it after the expense-only screens already exist means a migration.
-- `CategoryEntity`: id, name, colorHex, type — a category belongs to expense or income, matching the reference app's Expense/Income tab split in Graphs.
+- `TransactionEntity`: id, amount, note, date, categoryId (FK). No `type` column — a transaction's expense/income-ness is *derived* from its category, not stored redundantly on the row.
+- `CategoryEntity`: id, name, colorHex, type (`EXPENSE`/`INCOME`) — type lives here, once, since it's a property of the category, not the transaction. A transaction's type is always `category.type` via `categoryId`.
 - Nav shell: a drawer or bottom nav with placeholder screens for Transactions, Graphs, Categories, Settings.
 **Concepts:** Room entity relations (foreign keys), enums in Room via `TypeConverter`, multi-destination `NavHost`, sealed-class routes, `Scaffold` with `NavigationBar`/drawer.
 **Reference:** `Dashboard.jpg` (menu icon top-left)
+
+**Design note — type lives on `CategoryEntity` only:** deliberately not duplicated onto `TransactionEntity`. Upside: single source of truth, no risk of a transaction's type drifting from its category's. Cost: anything that needs to split transactions by expense/income (Phase 1's summary row, Phase 4's graph tab toggle) needs a join/lookup against `CategoryEntity` rather than a plain `WHERE type = ...` on the transactions table — DAO queries for those screens should `JOIN categories` or resolve type through the category map in the repository/ViewModel layer, not by adding the column back later.
 
 ### Phase 1 — Transactions list (the dashboard)
 **Goal:** rebuild the core screen — this is most of what the app actually is.

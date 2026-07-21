@@ -12,7 +12,7 @@
         @PrimaryKey(autoGenerate = true)
         val id:Int = 0,
         @ColumnInfo(name= "categoryType")
-        val type: String,
+        val type: TransactionType,
         @ColumnInfo(name = "color")
         val color: String = "#9E9E9E",
         @ColumnInfo(name = "categoryName")
